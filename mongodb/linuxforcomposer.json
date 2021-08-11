@@ -1,0 +1,72 @@
+{
+    "name": "linuxforphp/linuxforcomposer",
+    "description": "A Composer interface to run 'Linux for PHP' Docker containers, Dockerfiles or docker-compose files.",
+    "single": {
+        "image": {
+            "linuxforcomposer": {
+                "php-versions": [
+                    "7.4"
+                ],
+                "script": [
+                    "lfphp-get --force mongodb 4.0.16 '' -y",
+                    "lfphp-get --force php-ext mongodb",
+                    "sed --follow-symlinks -i 's/;extension=mongodb.so/extension=mongodb.so/' /etc/php.ini",
+                    "if [[ -d /srv/tempo/myproject ]]; then cd /srv/tempo/myproject && composer require mongodb/mongodb; fi",
+                    "/etc/init.d/mongod start",
+                    "sleep 5",
+                    "if [[ ! -d /srv/mongodump ]]; then mkdir /srv/mongodump; else cd /srv/mongodump && mongorestore; fi",
+                    "if [[ $( grep -xq \".*mongodump.*\" /srv/tempo/crons/crons.hourly && echo $? ) != 0 ]]; then echo \"cd /srv/mongodump && rm -rf dump/ && mongodump > /dev/null 2>&1\" >> /srv/tempo/crons/crons.hourly; fi",
+                    "/etc/init.d/mongod stop",
+                    "sleep 5",
+                    "ln -s /etc/sv/mongod /services",
+                    "sed -i 's/ln -s \\/etc\\/sv\\/exim \\/services/#ln -s \\/etc\\/sv\\/exim \\/services/' /bin/lfphp",
+                    "sed -i 's/ln -s \\/etc\\/sv\\/ldap \\/services/#ln -s \\/etc\\/sv\\/ldap \\/services/' /bin/lfphp",
+                    "sed -i 's/ln -s \\/etc\\/sv\\/nginx \\/services/#ln -s \\/etc\\/sv\\/nginx \\/services/' /bin/lfphp",
+                    "sleep 5",
+                    "lfphp"
+                ],
+                "thread-safe": "false"
+            },
+            "dockerfile": {
+                "url": "",
+                "container-name": "",
+                "username": "",
+                "token": ""
+            }
+        },
+        "containers": {
+            "modes": {
+                "mode1": "detached",
+                "mode2": "interactive",
+                "mode3": "tty"
+            },
+            "ports": {
+                "port1": [
+                    "8181:80"
+                ]
+            },
+            "volumes": {
+                "volume1": ""
+            },
+            "persist-data": {
+                "mount": "false",
+                "root-name": "",
+                "directories": {
+                    "directory1": "",
+                    "directory2": "",
+                    "directory3": ""
+                }
+            }
+        }
+    },
+    "docker-compose": {
+        "url": "",
+        "username": "",
+        "token": ""
+    },
+    "lfphp-cloud": {
+        "account": "",
+        "username": "",
+        "token": ""
+    }
+}
